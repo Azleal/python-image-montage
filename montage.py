@@ -30,7 +30,7 @@ def main_handler(event, context):
         layout_set = parser.layout_set
         image_paths = parser.image_paths
         layout = layout_set.get_layout(len(image_paths))
-        layout.assemble(image_paths, scale=1 if 'scale' not in parser.components_dict else parser.components_dict['scale'])
+        layout.assemble(image_paths, scale=1 if 'scale' not in parser.components_dict else float(parser.components_dict['scale']))
         if CosObject(bucket, assembled_image_key).has_cos_client():
             CosObject(bucket, assembled_image_key).put_object(layout.assembled_image_path)
         local_assembled_image_path = layout.assembled_image_path

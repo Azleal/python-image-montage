@@ -29,7 +29,7 @@ def test_main_handler():
     ]
     images_str = json.dumps(images)
     images_str_base64 = str(base64.urlsafe_b64encode(images_str.encode("utf-8")), encoding="utf-8")
-    path = "/montage/layout_set/group_avatar/scale/5/images/%s" % images_str_base64
+    path = "/montage/layout_set/group_avatar/scale/1.5/images/%s" % images_str_base64
     print(path)
     event = {"path": path}
     result = montage.main_handler(event, None)
