@@ -1,6 +1,7 @@
 import base64
 import os.path
 
+from tencent_cos_python.cos_client_factory import CosClientFactory
 from tencent_cos_python.util import Util
 
 from tencent_cos_python.cos_object import CosObject
@@ -12,7 +13,7 @@ import hashlib
 bucket = Util.get_random_str(8) if "montage_bucket" not in os.environ else os.getenv("montage_bucket")
 group_avatar_cos_prefix = os.path.join('/', 'group_avatar')
 image_type = 'png'
-
+cos_client = CosClientFactory(env_prefix="montage_cos_", env_splitter="_").get(bucket)
 
 def main_handler(event, context):
     path = event["path"]
@@ -23,7 +24,7 @@ def main_handler(event, context):
 
     parser = None
 
-    if assembled_cos_object.has_cos_client() and assembled_cos_object.object_exists():
+    if assembled_cos_object.object_exists(cos_client):
         local_assembled_image_path = assembled_cos_object.get_object()
     else:
         parser = PathParser(path)
