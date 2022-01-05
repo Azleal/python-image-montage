@@ -15,6 +15,7 @@ group_avatar_cos_prefix = os.path.join('/', 'group_avatar')
 image_type = 'png'
 cos_client = CosClientFactory(env_prefix="montage_cos_", env_splitter="_").get(bucket)
 
+
 def main_handler(event, context):
     path = event["path"]
     path_md5 = hashlib.md5(path.encode('utf-8')).hexdigest()
@@ -24,16 +25,16 @@ def main_handler(event, context):
 
     parser = None
 
-    if assembled_cos_object.object_exists(cos_client):
-        local_assembled_image_path = assembled_cos_object.get_object()
+    if cos_client is not None and assembled_cos_object.object_exists(cos_client):
+        local_assembled_image_path = assembled_cos_object.get_object(cos_client)
     else:
         parser = PathParser(path)
         layout_set = parser.layout_set
         image_paths = parser.image_paths
         layout = layout_set.get_layout(len(image_paths))
         layout.assemble(image_paths, scale=1 if 'scale' not in parser.components_dict else float(parser.components_dict['scale']))
-        if CosObject(bucket, assembled_image_key).has_cos_client():
-            CosObject(bucket, assembled_image_key).put_object(layout.assembled_image_path)
+        if cos_client is not None:
+            CosObject(bucket, assembled_image_key).put_object(cos_client, layout.assembled_image_path)
         local_assembled_image_path = layout.assembled_image_path
 
     with open(local_assembled_image_path, 'rb') as f:
